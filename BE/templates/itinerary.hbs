@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: 'Helvetica', sans-serif; padding: 20px; background-color: #9ACBD0; }
+    h1 { text-align: center; font-size: 28px; margin-bottom: 5px; }
+    .info { text-align: center; margin-bottom: 20px; }
+    .day { border: 1px solid #F2EFE7; padding: 10px; margin-bottom: 10px; }
+    .day-title { font-weight: bold; font-size: 18px; background: #eee; padding: 5px; }
+    .time-block { margin: 5px 0; }
+    .label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Travel Itinerary</h1>
+  <div class="info">
+    <p><strong>Flight #:</strong> {{flightNumber}}</p>
+    <p><strong>Hotel Address:</strong> {{hotelAddress}}</p>
+    <p><strong>Arrival:</strong> {{arrival}} | <strong>Departure:</strong> {{departure}}</p>
+  </div>
+
+  {{#each days}}
+  <div class="day">
+    <div class="day-title">{{day}}</div><br>
+    <div class="time-block"><span class="label">Morning:</span> {{morning}}</div> <br>
+    <div class="time-block"><span class="label">Afternoon:</span> {{afternoon}}</div><br>
+    <div class="time-block"><span class="label">Evening:</span> {{evening}}</div><br>
+  </div>
+  {{/each}}
+</body>
+</html>
