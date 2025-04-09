@@ -51,6 +51,8 @@ const req = http.request(options, function (res) {
 						rating: item.rating,
 						lowest_price: item.offer_group.lowest_price,
 						moreInfo: item.web_url,
+						longitude:item.longitude,
+						latitude:item.latitude,
 						moreImages : imageArray
 						})
 						
@@ -64,18 +66,20 @@ const req = http.request(options, function (res) {
 
 				
 			} catch(err){
-				console.log("error again")
+				// console.log("error again")
 			}
 			
 			if (i) {
 				
-			console.log(i)
+			// console.log(i)
 					arr.push({
 						name: item.name,
 			
 						location: item.location_string,
 						//  imageUrl: item.photo.images.large.url,
 						// imageCaption: item.photo.caption,
+						longitude:item.longitude,
+						latitude:item.latitude,
 						rating: item.rating,
 						moreInfo: item.web_url,
 						// description:item.description
