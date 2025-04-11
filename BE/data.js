@@ -11,6 +11,7 @@ const dotenv = require('dotenv').config({path: '/home/saidarshan74/Desktop/Tripm
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
+
 function formatDate(date, offsetDays) {
   const options = { weekday: 'short', day: 'numeric', month: 'short' };
   const currentDate = new Date(date);
@@ -63,7 +64,8 @@ Itinerary format should be:
 
   response = await response.text.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
   let data = await response
-  console.log(data)
+  return data;
+  
 }
 
 
@@ -85,7 +87,9 @@ const places = [
 const days = 2;
 const startDate = "2025-04-25"; // format: YYYY-MM-DD
 
-generateItinerary({ places, days, startDate });
+const data= await generateItinerary({ places, days, startDate });
+
+console.log(data)
 
 
 
