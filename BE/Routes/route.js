@@ -11,9 +11,9 @@ const { GoogleGenAI } = require("@google/genai");
 
 route.post('/places',async(req,response)=>{
 
-    const PlaceName = req.body.placeName;
+    const PlaceName = req.body.destination;
     const noOfDays = req.body.days;
-    const begin = req.body.startDate;
+    const begin = req.body.travelDate;
     
 
 
@@ -95,7 +95,7 @@ async function getPlaceId(query) {
             chunks.push(chunk);
         });
     
-        res.on('end', function () {
+        res.on('end', async function () {
             const body = Buffer.concat(chunks);
              
             let arr = []
@@ -178,15 +178,94 @@ async function getPlaceId(query) {
              })
           })
 
-          console.log(arr2)
+        //   console.log(arr2)
 
+          // Gemini Model Which Will Geneate intenrary content
+
+          
+          const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
+
+
+          function formatDate(date, offsetDays) {
+            const options = { weekday: 'short', day: 'numeric', month: 'short' };
+            const currentDate = new Date(date);
+            currentDate.setDate(currentDate.getDate() + offsetDays);
+            return currentDate.toLocaleDateString('en-US', options);
+          }
+          
+          async function generateItinerary({ places, days, startDate }) {
+            let dayDescriptions = "";
+          
+            for (let i = 0; i < days; i++) {
+              const dateFormatted = formatDate(startDate, i);
+              dayDescriptions += `\nDay ${i + 1} - ${dateFormatted}\n`;
+              dayDescriptions += `Suggest places to visit from the given list.\n\n`;
+            }
+          
+            const prompt = `
+          Create a JSON itinerary for a ${days}-day trip starting on ${formatDate(startDate, 0)}.
+          
+          Places to include:
+          ${places.map((place, index) => `
+          ${index + 1}. Name: ${place.name}
+             Description: ${place.description}
+             Location: ${place.location}
+             Image URL: ${place.image}
+          `).join('')}
+          
+          Itinerary format should be:
+          [
+            {
+              "day": 1,
+              "date": "Fri, 18 Apr",
+              "activities": [
+                {
+                  "title": "Place name",
+                  "description": "Short description",
+                  "duration": "e.g. 120 min",
+                  "location": "City name",
+                  "image": "image url"
+                }
+              ]
+            }
+          ]
+          `;
+          
+            let response = await ai.models.generateContent({
+              model: "gemini-2.0-flash",
+              contents: prompt,
+            });
+          
+            response = await response.text.replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
+            let data = await response
+            return data;
+            
+          }
+          
+          
+          const places = arr2;
+          
+          const days = noOfDays;
+          const startDate = begin; // format: YYYY-MM-DD
+          
+          async function generate(places,days,startDate) {
+            const data= await generateItinerary({ places, days, startDate });
+          
+          return data;
+          }
+          
+          
+          let data1 = await generate(places,days,startDate)
+                data1= await JSON.parse(data1)
+                console.log(data1)
+          
             
            
   
            
             response.json({
-                    placesData: arr2,
-                    moreInfo: arr
+                    placesData: data1,
+                   
                 })
     
     
