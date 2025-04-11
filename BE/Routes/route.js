@@ -12,8 +12,12 @@ const { GoogleGenAI } = require("@google/genai");
 route.post('/places',async(req,response)=>{
 
     const PlaceName = req.body.destination;
-    const noOfDays = req.body.days;
-    const begin = req.body.travelDate;
+    console.log(PlaceName)
+    const noOfDays = req.body.duration;
+    console.log(noOfDays)
+    const begin = req.body.startDate;
+    console.log(begin)
+    
     
 
 
@@ -81,7 +85,7 @@ async function getPlaceId(query) {
         method: 'GET',
         hostname: 'travel-advisor.p.rapidapi.com',
         port: null,
-        path: `/attractions/list?location_id=295424&currency=USD&lang=en_US&lunit=km&limit=10&sort=recommended`,
+        path: `/attractions/list?location_id=${placesID}&currency=USD&lang=en_US&lunit=km&limit=10&sort=recommended`,
         headers: {
             'x-rapidapi-key': process.env.X_RAPID_API_KEY,
             'x-rapidapi-host': 'travel-advisor.p.rapidapi.com'
@@ -139,7 +143,7 @@ async function getPlaceId(query) {
     
                     
                 } catch(err){
-                    
+                    // console.log("there is an error")
                 }
                 
                 if (i) {
@@ -283,7 +287,56 @@ async function getPlaceId(query) {
 
 /// ROUTE FOR GENERATING ITINERARY PDF
 
-route.get('/download',async(req,res)=>{
+route.get('/autocomplete',async(req,res)=>{
+
+    let value = req.query.value;
+
+    const options = {
+        method: 'GET',
+        hostname: 'wft-geo-db.p.rapidapi.com',
+        port: null,
+        path: `/v1/geo/places?countryIds=IN&namePrefix=${value}&limit=3`,
+        headers: {
+            'x-rapidapi-key': process.env.X_RAPID_API_KEY,
+            'x-rapidapi-host': 'wft-geo-db.p.rapidapi.com'
+        }
+    };
+    
+    const request = http.request(options,  function (response) {
+        const chunks = [];
+    
+        response.on('data', function (chunk) {
+            chunks.push(chunk);
+        });
+    
+        response.on('end',async function () {
+            const body = Buffer.concat(chunks);
+    
+    const data = JSON.parse(body.toString()).data;
+    
+    let details =[]
+    let result =  data.map((data)=>{
+                    let name = data.name
+                    let region = data.region
+                    let country = data.country
+    
+                    details.push(`${name}, ${region}, ${country}`)
+                    // let detailes = ;
+                   
+                })
+    console.log("helo g req madde")
+                res.json({
+                    values:details
+                   })
+                
+
+            // console.log(body.toString());
+        });
+    });
+
+ 
+    
+    request.end();
 
 })
 
