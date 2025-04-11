@@ -164,14 +164,29 @@ async function getPlaceId(query) {
         
 
 
-console.log(arr)
+// console.log(arr)
+
+       let arr2 = []
+
+          arr.map((item)=>{
+             arr2.push({
+                name: item.name,
+                image: item.imageUrl,
+                description:'generate yourself dont keep empty',
+                location:item.location
+
+             })
+          })
+
+          console.log(arr2)
 
             
            
   
            
             response.json({
-                    placesData: arr,
+                    placesData: arr2,
+                    moreInfo: arr
                 })
     
     
